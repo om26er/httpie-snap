@@ -1,0 +1,36 @@
+name: httpee
+base: core18
+summary: HTTPie - a CLI, cURL-like tool for humans.
+description: |
+  HTTPie (pronounced aitch-tee-tee-pie) is a command line HTTP client.
+  Its goal is to make CLI interaction with web services as human-friendly as possible.
+  It provides a simple http command that allows for sending arbitrary HTTP requests
+  using a simple and natural syntax, and displays colorized output.
+
+   HTTPie can be used for testing, debugging, and generally interacting with HTTP servers.
+
+adopt-info: httpee
+grade: stable
+confinement: strict
+
+parts:
+  httpee:
+    plugin: python
+    source: https://github.com/jakubroztocil/httpie.git
+    build-packages:
+      - git
+    override-pull: |
+      snapcraftctl pull
+      snapcraftctl set-version \
+        "$(git describe --always --dirty --tags)"
+    override-prime: |
+      snapcraftctl prime
+      echo "Compiling pyc files..."
+      $SNAPCRAFT_PART_INSTALL/usr/bin/python3 -m compileall -q $SNAPCRAFT_PRIME
+
+apps:
+  httpee:
+    command: http
+    plugs:
+      - home
+      - network
